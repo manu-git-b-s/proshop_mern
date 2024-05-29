@@ -1,37 +1,35 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
-  Form,
   Button,
   Card,
   Col,
-  FormControl,
-  FormGroup,
-  FormLabel,
   Image,
   ListGroup,
   ListGroupItem,
   Row,
 } from "react-bootstrap";
 import Rating from "../components/Rating";
-import products from "../products";
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 const ProductScreen = () => {
+  const [product, setProduct] = useState({});
   const { id: productId } = useParams();
-  const product = products.find((p) => p._id === productId);
-  const [qty, setQty] = useState(1);
 
-  //   const addToCartHandler = () => {
-  // dispatch(addToCart({ ...product, qty }));
-  // navigate("/cart");
-  //   };
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const { data } = await axios.get(`/api/products/${productId}`);
+      setProduct(data);
+    };
+
+    fetchProduct();
+  }, [productId]);
 
   return (
     <div>
       <Link className="btn btn-light my-3" to="/">
         Go Back
       </Link>
-
       <Row className="my-3">
         <Col md={5}>
           <Image src={product.image} alt={product.name} fluid />
@@ -70,33 +68,11 @@ const ProductScreen = () => {
                   </Col>
                 </Row>
               </ListGroup.Item>
-              {/* {product.countInStock > 0 && (
-                <ListGroup.Item>
-                  <Row>
-                    <Col>Qty</Col>
-                    <Col>
-                      <FormControl
-                        as="select"
-                        value={qty}
-                        onChange={(e) => setQty(Number(e.target.value))}
-                      >
-                        {[...Array(product.countInStock).keys()].map((x) => (
-                          <option key={x + 1} value={x + 1}>
-                            {x + 1}
-                          </option>
-                        ))}
-                      </FormControl>
-                      {product.countInStock > 0 ? "In Stock" : "Out Of Stock"}
-                    </Col>
-                  </Row>
-                </ListGroup.Item>
-              )} */}
               <ListGroupItem>
                 <Button
                   className="btn-block"
                   type="button"
                   disabled={product.countInStock === 0}
-                  //   onClickCapture={addToCartHandler}
                 >
                   Add To Cart
                 </Button>
